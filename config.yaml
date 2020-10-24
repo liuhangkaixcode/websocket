@@ -1,0 +1,24 @@
+websocket:
+  port: 8181
+  intervalReq: 2 #请求间隔  2s内只能有一次请求
+  maxclient: 21 #最大客户连接数
+
+
+mysql:
+  host: 192.168.88.87
+  port: 3306
+  db: test
+  username: root
+  password: aa123456
+
+redis:
+  host_port: 192.168.88.87:6379
+  password: 123456
+  maxidle: 20 #是最大的空闲连接数，这里取值为20，表示即使没有数据库连接时依然可以保持20空闲的
+  maxactive: 1000 #表示同时最多有1000个数据库连
+  db: 0 #0-15 数据库
+  idletimeout: 10
+log:
+  mode: 1   #1表是写本地  2日志发送到RabbitMq-->ELK
+  localPath: logs/websokcet.log #表示写本地
+  level: warn #debug info warn error  默认debug
