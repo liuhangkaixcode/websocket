@@ -1,11 +1,10 @@
 package core
 
-
 import (
 	"fmt"
+	"github.com/gorilla/websocket"
 	"github.com/liuhangkaixcode/websocket/global"
 	"net/http"
-	"github.com/gorilla/websocket"
 	"sync"
 	"time"
 )
@@ -31,13 +30,14 @@ type opFunc  func(h *Port)
 type Port struct {
 	userId string
 	conn *websocket.Conn
+	isAdd bool
 	l   sync.Mutex
 }
 
 type IPort interface {
 	ConnectHubToWork()
 	SendMsg(m string) error
-	Close()
+	Close() chan int
 	GetConn() *websocket.Conn
 	GetUserID() string
 }
@@ -59,18 +59,41 @@ func NewPort(userId string,w http.ResponseWriter, r *http.Request, responseHeade
 	for _, op:=range ops{
 		op(a)
 	}
-	//添加端口
-	e = HubHandle().AddPort(userId, a)
-	if e!=nil {
+
+	if HubHandle().GetAllportslens()+1 >= global.Global_Config_Manger.WebSocket.MaxClient{
 		conn.WriteMessage(websocket.TextMessage,[]byte(fmt.Sprintf("连接数已经达到最大数-%d",global.Global_Config_Manger.WebSocket.MaxClient)))
 		conn.Close()
-		return nil,e
+		return nil,fmt.Errorf("已经超过了")
 	}
+
+
+	if v,ok:= HubHandle().GetPort(userId);ok{
+		select {
+		case <-v.Close():
+			e = HubHandle().AddPort(userId, a)
+		case <-time.After(time.Second*5):
+			return nil,fmt.Errorf("超时了")
+
+		}
+	}else{
+		e = HubHandle().AddPort(userId, a)
+	}
+
+
+
+  data:=HubHandle().GetCache(a.userId)
+  for _,d:=range data{
+  	a.GetConn().WriteMessage(websocket.TextMessage,[]byte(d))
+  }
+
+
+
 	return a,nil
 
 }
 
-func (p *Port)Close() {
+func (p *Port)Close() chan int{
+	ch:=make(chan int,1)
 	 p.l.Lock()
 	 defer p.l.Unlock()
 	if p.conn==nil {
@@ -79,7 +102,10 @@ func (p *Port)Close() {
 		p.conn.Close()
 		p.conn=nil
 		HubHandle().RemovePort(p.userId)
+
 	}
+	ch<-1
+	return ch
 
 }
 
@@ -105,7 +131,6 @@ func (p *Port)GetUserID() string{
 }
 func (p*Port)readerMessage(closech chan int) {
 	defer func() {
-		p.Close()
 		fmt.Println("读的时候-关闭连接了")
 	}()
 
@@ -117,10 +142,11 @@ func (p*Port)readerMessage(closech chan int) {
 		return
 	})
 	for {
-		messageType, p, err := p.conn.ReadMessage()
+		messageType, _, err := p.conn.ReadMessage()
 		//这里是总控 无论是ping 还是主动发送信息 都是在这里
-		fmt.Println("读取所有的信息-->",messageType,p,err)
+		fmt.Println("读取所有的信息-->",messageType,err)
 		if err != nil || messageType == websocket.CloseMessage {
+			<-p.Close()
 			close(closech)
 			return
 		}
@@ -139,7 +165,6 @@ func (p *Port)pingWrite11(closech chan int)  {
 	defer func() {
 		pingTicker.Stop()
 		fmt.Println("因为ping关闭了")
-		p.Close()
 
 	}()
 

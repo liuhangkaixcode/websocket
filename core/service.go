@@ -1,22 +1,29 @@
 package core
 
+import "time"
+
 //业务集中处理data
 func dealWithMessage(m WSMessage)  {
 	if m.Type == "1" {
 		for _,v:=range m.ToidArray{
-			kk:=HubHandle().GetPort(v)
-			if kk == nil {
+			iPort, _ := HubHandle().GetPort(v)
+
+			if iPort == nil {
 				HubHandle().AddCache(v,m.Content)
 			}else{
-				kk.SendMsg(m.Content)
+				iPort.SendMsg(m.Content)
 			}
 
 		}
 	}else if m.Type == "0" {
-		HubHandle().GetPort(m.FromId).Close()
-		HubHandle().RemovePort(m.FromId)
+		iPort, _ := HubHandle().GetPort(m.FromId)
+		select {
+		case <-iPort.Close():
+		case <-time.After(time.Second*5):
+
+		}
+
 	}else {
-		HubHandle().GetPort(m.FromId).SendMsg(m.Content)
 
 	}
 

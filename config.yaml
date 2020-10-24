@@ -1,7 +1,7 @@
 websocket:
   port: 8181
   intervalReq: 2 #请求间隔  2s内只能有一次请求
-  maxclient: 21 #最大客户连接数
+  maxclient: 2000 #最大客户连接数
 
 
 mysql:

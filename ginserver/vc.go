@@ -10,7 +10,7 @@ import (
 
 //开启连接服务器
 func ConnctServer(c *gin.Context)  {
-	userid:=c.Query("userId")
+	userid:=c.Query("userid")
 
 	b, _ := checkRequestIsFast(userid)
 	if b == false {
@@ -28,8 +28,10 @@ func ConnctServer(c *gin.Context)  {
 
 //发送消息
 func SendMsg(c *gin.Context)  {
+
 	var m core.WSMessage
-	query := c.ShouldBindQuery(&m)
+	query := c.ShouldBindJSON(&m)
+	fmt.Print(m,"======")
 	if query !=nil {
 		c.JSON(200,"shoubindquery异常")
 		return
@@ -38,7 +40,7 @@ func SendMsg(c *gin.Context)  {
 		c.JSON(200,"formId等于0")
 		return
 	}
-	if core.HubHandle().GetPort(m.FromId) ==nil{
+	if _,ok:=core.HubHandle().GetPort(m.FromId);!ok{
 		c.JSON(200,"您视乎断开连接了")
 		return
 	}
