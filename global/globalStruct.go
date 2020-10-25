@@ -5,6 +5,8 @@ type ConfigManger struct {
 	Redis Redis    `mapstructure:"redis" json:"redis" yaml:"redis"`
 	Log Log        `mapstructure:"log" json:"log" yaml:"log"`
 	WebSocket WebSocket  `mapstructure:"websocket" json:"websocket" yaml:"websocket"`
+	RabbitMQ RabbitMQ  `mapstructure:"rabbitmq" json:"rabbitmq" yaml:"rabbitmq"`
+	Jaeger Jaeger  `mapstructure:"jaeger" json:"jaeger" yaml:"jaeger"`
 }
 
 type WebSocket struct {
@@ -33,4 +35,16 @@ type Log struct {
 	Mode int         `mapstructure:"mode" json:"mode" yaml:"mode"`
 	LocalPath string `mapstructure:"localpath" json:"localpath" yaml:"localpath"`
 	Level string     `mapstructure:"level" json:"level" yaml:"level"`
+}
+
+type RabbitMQ struct {
+	Host string  `mapstructure:"host" json:"host" yaml:"host"`
+	UserName string `mapstructure:"username" json:"username" yaml:"username"`
+	Password string  `mapstructure:"password" json:"password" yaml:"pasword"`
+	Vhost string      `mapstructure:"vhost" json:"vhost" yaml:"vhost"`
+	QueueName string   `mapstructure:"queueName" json:"queueName" yaml:"queueName"`
+}
+type Jaeger struct {
+	Active int `mapstructure:"active" json:"active" yaml:"active"`
+	Host string `mapstructure:"host" json:"host" yaml:"host"`
 }

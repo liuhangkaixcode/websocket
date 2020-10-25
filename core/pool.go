@@ -4,17 +4,16 @@ import (
 	"fmt"
 	"github.com/liuhangkaixcode/websocket/global"
 	"github.com/panjf2000/ants/v2"
-	"time"
 )
-
+//处理发送消息的线程池
 func InitWebSocketBasic()  {
 
-	go func() {
-		for{
-			time.Sleep(time.Second*10)
-			//fmt.Println("交换机的容量是",GetHubInstance().GetAllportsMap())
-		}
-	}()
+	//go func() {
+	//	for{
+	//		time.Sleep(time.Second*10)
+	//		//fmt.Println("交换机的容量是",GetHubInstance().GetAllportsMap())
+	//	}
+	//}()
 
 	p, err := ants.NewPoolWithFunc(10, func(i interface{}) {
 

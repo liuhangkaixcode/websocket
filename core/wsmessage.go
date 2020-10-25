@@ -1,4 +1,5 @@
 package core
+//消息结构体
 type WSMessage struct {
 	FromId string    `form:"fromid" json:"fromid"`  //请求userid
 	ToId  string   `form:"toid" json:"toid" `       //发送id 12,33,33 用，隔开

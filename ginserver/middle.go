@@ -1,10 +1,14 @@
 package ginserver
 
 import (
+	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/liuhangkaixcode/websocket/global"
+	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 	"sort"
 )
 
@@ -68,4 +72,22 @@ func checkSign(c *gin.Context)  {
 
 
 
+}
+
+func jaegerCheck(ctx *gin.Context)  {
+	path := ctx.Request.URL.Path
+
+	span := global.Global_Jaeger.StartSpan(path,
+
+		ext.SpanKindRPCServer)
+	ext.HTTPUrl.Set(span, path)
+	ext.HTTPMethod.Set(span, ctx.Request.Method)
+	c := opentracing.ContextWithSpan(context.Background(), span)
+
+	ctx.Set("ctx", c)
+
+	ctx.Next()
+
+	ext.HTTPStatusCode.Set(span, uint16(ctx.Writer.Status()))
+	span.Finish()
 }

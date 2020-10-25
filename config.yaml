@@ -1,8 +1,7 @@
 websocket:
-  port: 8181
+  port: 8181 #监听服务端口号
   intervalReq: 2 #请求间隔  2s内只能有一次请求
   maxclient: 2000 #最大客户连接数
-
 mysql:
   host: 192.168.88.87
   port: 3306
@@ -20,6 +19,15 @@ log:
   mode: 1   #1表是写本地  2日志发送到RabbitMq-->ELK
   localPath: logs/websokcet.log #表示写本地
   level: warn #debug info warn error  默认debug
+
 rabbitmq:
+   host: xi.liuhangkai.top:5672
+   username: skill
+   password: 123456
+   vhost: skill #虚拟机
+   queueName: workqueue #工作队列
+jaeger: #链路检测
+  active: 0 # 0不使用 1使用
+  host: 192.168.88.87:6831
 
 

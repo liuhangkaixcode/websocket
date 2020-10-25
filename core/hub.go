@@ -14,23 +14,28 @@ var (
 )
 
 type hub struct {
-	portsMap map[string]IPort
+	portsMap map[string]IPort //容量
 	locker  sync.RWMutex
 
 }
 type hubIF interface {
+	//将端口（连接）添加到交换机
 	AddPort(userId string ,conn IPort)error
+	//将端口（连接）从交换机移除
 	RemovePort(userId string)
+	//从交换机获取端口
 	GetPort(userId string) (IPort, bool)
+	//获取交换机中所有的端口号
 	GetAllportsMap() map[string]IPort
+	//获取交换机中的容量
 	GetAllportslens() int
 
+	//将为发送成功的消息添加到hub的缓存
 	AddCache(userId string,m string)
+	//获取缓存
 	GetCache(userId string)[]string
 
 }
-
-
 
 func (h *hub)GetAllportslens()int  {
 	h.locker.RLock()

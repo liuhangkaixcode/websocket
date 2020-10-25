@@ -2,7 +2,7 @@ package core
 
 import "time"
 
-//业务集中处理data
+//业务集中处理
 func dealWithMessage(m WSMessage)  {
 	if m.Type == "1" {
 		for _,v:=range m.ToidArray{

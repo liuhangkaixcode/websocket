@@ -3,6 +3,7 @@ package global
 import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/jinzhu/gorm"
+	"github.com/opentracing/opentracing-go"
 	"github.com/panjf2000/ants/v2"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -16,4 +17,7 @@ var (
 	Global_MysqlDbInstance  *gorm.DB     //mysql
 
 	Global_DealWsMsg_Pool  *ants.PoolWithFunc //处理websocket msg 转发信息的pool
+
+	Global_Jaeger   opentracing.Tracer
+
 )

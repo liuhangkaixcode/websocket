@@ -1,15 +1,21 @@
 package ginserver
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/pprof"
+	"github.com/liuhangkaixcode/websocket/global"
 )
 
 func InitRouter(g *gin.Engine)  {
 	pprof.Register(g)
-	g.Use(checkUserId)
+
+	if global.Global_Config_Manger.Jaeger.Active == 1 {
+		fmt.Println("=active")
+		g.Use(jaegerCheck)
+	}
 	 //连接
-    g.GET("/connect",ConnctServer)
+    g.GET("/connect",checkUserId,ConnctServer)
     //发送服务器
     g.POST("/sendmsg",SendMsg)
 

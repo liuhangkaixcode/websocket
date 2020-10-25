@@ -48,9 +48,6 @@ func DeleteCache(userId string)  {
 	CacheTool.Delete(userId)
 }
 
-
-
-
 //检查请求频率是否过快
 func checkRequestIsFast(userId string) (bool ,*Request) {
 	requst:=GetCache(userId)
@@ -72,3 +69,5 @@ func checkRequestIsFast(userId string) (bool ,*Request) {
 	}
 	return true,requst
 }
+
+

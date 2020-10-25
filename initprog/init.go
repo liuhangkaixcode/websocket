@@ -9,7 +9,6 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"os"
 	"time"
 
 )
@@ -21,8 +20,11 @@ func InitBasicConfig()  {
     initLogConfig()
     //初始化sql
     initSql()
-    //出示话redis
+    //初始化redis
     initRedis()
+    //
+    initJaeger()
+
 
 }
 
@@ -67,7 +69,7 @@ func initLogConfig()  {
 
 	core := zapcore.NewCore(
 		zapcore.NewJSONEncoder(encoderConfig),                                           // 编码器配置
-		zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(&hook)), // 打印到控制台和文件
+		zapcore.NewMultiWriteSyncer(zapcore.AddSync(&hook)), // 打印到控制台和文件zapcore.AddSync(os.Stdout),
 		atomicLevel,                                                                     // 日志级别
 	)
 
