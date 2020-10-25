@@ -22,7 +22,7 @@ func InitBasicConfig()  {
     initSql()
     //初始化redis
     initRedis()
-    //
+    //初始化jaeger
     initJaeger()
 
 

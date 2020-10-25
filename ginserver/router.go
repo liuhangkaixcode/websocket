@@ -16,7 +16,7 @@ func InitRouter(g *gin.Engine)  {
 	}
 	 //连接
     g.GET("/connect",checkUserId,ConnctServer)
-    //发送服务器
+    //发送消息服务器
     g.POST("/sendmsg",SendMsg)
 
 }

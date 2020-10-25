@@ -43,16 +43,6 @@ func main() {
         MaxHeaderBytes: 1 << 20,
     }
     fmt.Println("服务已经起来了.... 端口号是：",global.Global_Config_Manger.WebSocket.Port)
-
-
-
-    core.LogDebug("debug信息")
-    core.LogWarn("LogWarn信息")
-    core.LogError("LogError信息")
-    core.LogInfo("LogInfo信息")
-
-
-
     s.ListenAndServe()
 
 

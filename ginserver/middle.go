@@ -73,7 +73,7 @@ func checkSign(c *gin.Context)  {
 
 
 }
-
+//链路检测
 func jaegerCheck(ctx *gin.Context)  {
 	path := ctx.Request.URL.Path
 
