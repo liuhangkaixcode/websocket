@@ -37,7 +37,7 @@ type Port struct {
 type IPort interface {
 	ConnectHubToWork()
 	SendMsg(m string) error
-	Close() chan int
+	Close()
 	GetConn() *websocket.Conn
 	GetUserID() string
 }
@@ -68,15 +68,10 @@ func NewPort(userId string,w http.ResponseWriter, r *http.Request, responseHeade
 
 
 	if v,ok:= HubHandle().GetPort(userId);ok{
-		select {
-		case <-v.Close():
-			e = HubHandle().AddPort(userId, a)
-		case <-time.After(time.Second*5):
-			return nil,fmt.Errorf("超时了")
-
-		}
+		 v.Close()
+		 HubHandle().AddPort(userId, a)
 	}else{
-		e = HubHandle().AddPort(userId, a)
+		 HubHandle().AddPort(userId, a)
 	}
 
 
@@ -92,8 +87,8 @@ func NewPort(userId string,w http.ResponseWriter, r *http.Request, responseHeade
 
 }
 
-func (p *Port)Close() chan int{
-	ch:=make(chan int,1)
+func (p *Port)Close() {
+
 	 p.l.Lock()
 	 defer p.l.Unlock()
 	if p.conn==nil {
@@ -104,8 +99,7 @@ func (p *Port)Close() chan int{
 		HubHandle().RemovePort(p.userId)
 
 	}
-	ch<-1
-	return ch
+
 
 }
 
@@ -146,7 +140,13 @@ func (p*Port)readerMessage(closech chan int) {
 		//这里是总控 无论是ping 还是主动发送信息 都是在这里
 		fmt.Println("读取所有的信息-->",messageType,err)
 		if err != nil || messageType == websocket.CloseMessage {
-			<-p.Close()
+           p.l.Lock()
+			if p.conn !=nil  {
+				p.conn.Close()
+				p.conn=nil
+				HubHandle().RemovePort(p.userId)
+			}
+			p.l.Unlock()
 			close(closech)
 			return
 		}
